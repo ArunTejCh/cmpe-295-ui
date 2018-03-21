@@ -6,10 +6,15 @@
 <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
 
 <script type="text/javascript">
-	$.getJSON('data/aapl-ohlc.json',
+	$.getJSON('data/banknifty_hist.json',
 			function(data) {
-
+				console.log(data)
 				// create the chart
+				
+				var dataArray = [];
+				for(let i = 0; i < data.length; i++){
+					dataArray.push([data[i].date, data[i].open, data[i].high, data[i].low, data[i].close])
+				}
 				Highcharts.stockChart('container', {
 
 					rangeSelector : {
@@ -17,13 +22,13 @@
 					},
 
 					title : {
-						text : 'AAPL Stock Price'
+						text : 'BankNifty Stock Index'
 					},
 
 					series : [ {
 						type : 'candlestick',
-						name : 'AAPL Stock Price',
-						data : data,
+						name : 'BankNifty Stock Index',
+						data : dataArray,
 						dataGrouping : {
 							units : [ [ 'week', // unit name
 							[ 1 ] // allowed multiples
