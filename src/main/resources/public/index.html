@@ -9,7 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico">
 
-    <title>Starter Template for Bootstrap</title>
+    <title>Dashboard</title>
 
     <!-- Bootstrap core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -30,11 +30,16 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-<script src="https://code.highcharts.com/stock/highstock.js"></script>
-<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
+	<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/stock/indicators/indicators.js"></script>
+	<script src="https://code.highcharts.com/stock/indicators/ema.js"></script>
+	<script src="https://code.highcharts.com/stock/indicators/bollinger-bands.js"></script>
+	<script src="https://code.highcharts.com/stock/indicators/rsi.js"></script>
+	<script src="https://code.highcharts.com/stock/indicators/atr.js"></script>
 
 <script type="text/javascript">
-	$.getJSON('data/banknifty_hist.json',
+	$.getJSON('http://ec2-54-190-197-42.us-west-2.compute.amazonaws.com/indexes/BankNifty/historical',
 			function(data) {
 				console.log(data)
 				// create the chart
@@ -52,9 +57,14 @@
 					title : {
 						text : 'BankNifty Stock Index'
 					},
-
+					legend: {
+				        verticalAlign: 'top',
+				        layout: 'vertical',
+				        enabled: true
+				    },
 					series : [ {
 						type : 'candlestick',
+						id : 'bnknifty',
 						name : 'BankNifty Stock Index',
 						data : dataArray,
 						dataGrouping : {
@@ -62,7 +72,22 @@
 							[ 1 ] // allowed multiples
 							], [ 'month', [ 1, 2, 3, 4, 6 ] ] ]
 						}
-					} ]
+					} , {
+			            type: 'bb',
+			            linkedTo: 'bnknifty'
+			        }, {
+			            type: 'ema',
+			            linkedTo: 'bnknifty',
+			            params: {
+			                period: 10
+			            }
+			        }, {
+			            type: 'ema',
+			            linkedTo: 'bnknifty',
+			            params: {
+			                period: 30
+			            }
+			        }]
 				});
 			});
 </script>
@@ -99,6 +124,12 @@
         <!-- <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
        -->
        <div id="container" style="height: 400px; min-width: 310px"></div>
+       <button onClick="toggleIndicator(sma100)">EMA 10</button>
+
+		<button onClick="toggleIndicator(sma200)">EMA 30</button>
+		
+		<button onClick="toggleIndicator(bb)">Bollinger Bands</button>
+
        </div>
 
     </div><!-- /.container -->
