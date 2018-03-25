@@ -121,13 +121,6 @@
 			} , {
 	            type: 'bb',
 	            linkedTo: 'bnknifty'
-	        }, {
-	            type: 'ema',
-	            linkedTo: 'bnknifty',
-	            lineWidth: 1,
-	            params: {
-	                period: 10
-	            }
 	        },  {
 	            type: 'ema',
 	            linkedTo: 'bnknifty',
@@ -136,15 +129,7 @@
 	            params: {
 	                period: 30
 	            }
-	        }] /* ,
-	        drilldown:[
-	        	series:[{
-	        		id: 'Constituent stocks',
-	        		data:[
-	        			values[1][0]: 
-	        		]
-	        	}]
-	        ] */
+	        }]
 		});
 		var stockSeries = [];
 		for(let i = 1; i < values.length; i++){
