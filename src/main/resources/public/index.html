@@ -70,6 +70,16 @@
 		})
 		return prom;
 	}).then(function(values){
+		var prom = new Promise(function(resolve, reject){
+			$.getJSON(baseUrl+ '/indexes/' + values[0][0]+'/targets', function(targets){
+				console.log(`got targets data as ${targets}`);
+				values.push(targets);
+				resolve(values);
+			});
+		})
+		
+		return prom;
+	}).then(function(values){
 		var promises = [];
 		promises.push(Promise.resolve(values));		
 		for(let s of values[2]){
@@ -84,18 +94,36 @@
 	}).then(function(values){
 		console.log(`got values as ${values}`);
 		var data = values[0][1];
+		var targetData = values[0][3];
 		var dataArray = [];
-		var hdfcArray = [];
-		var iciciArray = [];
+		var targets = [];
+		var groupingUnits = [ [ 'week', // unit name
+			[ 1 ] // allowed multiples
+		], [ 'month', [ 1, 2, 3, 4, 6 ] ] ];
 		for(let i = 0; i < data.length; i++){
 			dataArray.push([data[i].date, data[i].open, data[i].high, data[i].low, data[i].close]);
-			hdfcArray.push([values[1][1][i].date, values[1][1][i].close]);
-			iciciArray.push([values[2][1][i].date, values[2][1][i].close]);
+		}
+		
+		for(let i = 0; i < targetData.length; i++){
+			targets.push([targetData[i].date, (targetData[i].target + 1)]);			
 		}
 		Highcharts.stockChart('container', {
 			rangeSelector : {
 				selected : 1
 			},
+			plotOptions: {
+	        	column: {
+	            	zones: [{
+	                	value: 2, // Values up to 10 (not including) ...
+	                    color: 'red' // ... have the color blue.
+	                },{
+	                	value: 3,
+	                	color: 'black' // Values from 10 (including) and up have the color red
+	                },{
+	                	color: 'green' // Values from 10 (including) and up have the color red
+	                }]
+	            }
+	        },
 			title : {
 				text : 'BankNifty Stock Index'
 			},
@@ -106,7 +134,32 @@
 		        verticalAlign: 'middle',
 		        align: 'right',
 		        enabled: true
-		    },
+		    },yAxis: [{
+	            labels: {
+	                align: 'right',
+	                x: -3
+	            },
+	            title: {
+	                text: 'Index Price'
+	            },
+	            height: '90%',
+	            lineWidth: 2,
+	            resize: {
+	                enabled: true
+	            }
+	        }, {
+	            labels: {
+	                align: 'right',
+	                x: -3
+	            },
+	            title: {
+	                text: 'Targets'
+	            },
+	            top: '95%',
+	            height: '5%',
+	            offset: 0,
+	            lineWidth: 2
+	        }],
 			series : [ {
 				type : 'candlestick',
 				id : 'bnknifty',
@@ -114,11 +167,17 @@
 				yAxis : 0,
 				data : dataArray,
 				dataGrouping : {
-					units : [ [ 'week', // unit name
-					[ 1 ] // allowed multiples
-					], [ 'month', [ 1, 2, 3, 4, 6 ] ] ]
+					units : groupingUnits
 				}
-			} , {
+			}, {
+	            type: 'column',
+	            name: 'Targets',
+	            data: targets,
+	            yAxis: 1,
+	            dataGrouping: {
+	                units: groupingUnits
+	            }
+	        } , {
 	            type: 'bb',
 	            linkedTo: 'bnknifty'
 	        },  {
